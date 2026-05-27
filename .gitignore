@@ -75,3 +75,9 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Claude Code per-user settings
+.claude/settings.local.json
+
+# Claude Code worktrees
+.claude/worktrees/
