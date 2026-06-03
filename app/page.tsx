@@ -331,6 +331,7 @@ type Tab = 'dashboard' | 'clients' | 'jobs';
 type ModalState =
   | { type: 'addClient' }
   | { type: 'editClient'; client: Client }
+  | { type: 'confirmDeleteClient'; id: string; name: string }
   | { type: 'addJob' }
   | { type: 'editJob'; job: Job }
   | null;
@@ -365,8 +366,12 @@ export default function App() {
     setModal(null);
   };
   const deleteClient = (id: string) => {
-    if (!confirm('Delete this client? Their jobs will remain.')) return;
+    const client = clients.find(c => c.id === id);
+    setModal({ type: 'confirmDeleteClient', id, name: client?.name ?? 'this client' });
+  };
+  const confirmDeleteClient = (id: string) => {
     setClients(prev => prev.filter(c => c.id !== id));
+    setModal(null);
   };
 
   // Job CRUD
@@ -431,6 +436,23 @@ export default function App() {
       {modal?.type === 'editClient' && (
         <Modal title="Edit Client" onClose={() => setModal(null)}>
           <ClientForm initial={modal.client} onSave={saveClient} onClose={() => setModal(null)} />
+        </Modal>
+      )}
+      {modal?.type === 'confirmDeleteClient' && (
+        <Modal title="Delete Client" onClose={() => setModal(null)}>
+          <p className="text-sm text-gray-700 mb-6">
+            Are you sure you want to delete <span className="font-semibold">{modal.name}</span>? Their jobs will remain. This cannot be undone.
+          </p>
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => setModal(null)}
+              className="border px-4 py-1.5 rounded text-sm hover:bg-gray-50"
+            >Cancel</button>
+            <button
+              onClick={() => confirmDeleteClient(modal.id)}
+              className="bg-red-600 text-white px-4 py-1.5 rounded text-sm hover:bg-red-700"
+            >Delete</button>
+          </div>
         </Modal>
       )}
       {modal?.type === 'addJob' && (
