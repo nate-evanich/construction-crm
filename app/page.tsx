@@ -153,7 +153,7 @@ function JobForm({ initial, clients, onSave, onClose }: {
         <textarea className="w-full border rounded px-3 py-1.5 text-sm" rows={2} value={form.notes} onChange={set('notes')} />
       </div>
       <div className="flex gap-2 pt-2">
-        <button type="submit" className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">Save</button>
+        <button type="submit" className="bg-green-600 text-white px-4 py-1.5 rounded text-sm hover:bg-green-700">Save</button>
         <button type="button" onClick={onClose} className="border px-4 py-1.5 rounded text-sm hover:bg-gray-50">Cancel</button>
       </div>
     </form>
