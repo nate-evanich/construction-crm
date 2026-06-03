@@ -145,7 +145,7 @@ function JobForm({ initial, clients, onSave, onClose }: {
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Address</label>
+        <label className="block text-sm font-medium mb-1">Job Address</label>
         <input className="w-full border rounded px-3 py-1.5 text-sm" value={form.address} onChange={set('address')} />
       </div>
       <div>
