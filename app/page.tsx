@@ -20,7 +20,6 @@ type Job = {
   clientId: string;
   status: JobStatus;
   value: number;
-  address: string;
   notes: string;
   createdAt: string;
 };
@@ -50,10 +49,10 @@ const SEED_CLIENTS: Client[] = [
 ];
 
 const SEED_JOBS: Job[] = [
-  { id: 'j1', title: 'Kitchen Remodel', clientId: 'c1', status: 'Active', value: 42000, address: '204 Oak St, Austin TX', notes: 'Cabinets arrive Thursday.', createdAt: '2026-04-10' },
-  { id: 'j2', title: 'Office Build-Out', clientId: 'c2', status: 'Quoted', value: 118000, address: '900 Congress Ave, Austin TX', notes: 'Waiting on permit approval.', createdAt: '2026-05-01' },
-  { id: 'j3', title: 'Deck Addition', clientId: 'c3', status: 'Lead', value: 18500, address: '77 Riverside Dr, Austin TX', notes: '', createdAt: '2026-05-20' },
-  { id: 'j4', title: 'Roof Replacement', clientId: 'c1', status: 'Completed', value: 31000, address: '204 Oak St, Austin TX', notes: 'Paid in full.', createdAt: '2026-02-15' },
+  { id: 'j1', title: 'Kitchen Remodel', clientId: 'c1', status: 'Active', value: 42000, notes: 'Cabinets arrive Thursday.', createdAt: '2026-04-10' },
+  { id: 'j2', title: 'Office Build-Out', clientId: 'c2', status: 'Quoted', value: 118000, notes: 'Waiting on permit approval.', createdAt: '2026-05-01' },
+  { id: 'j3', title: 'Deck Addition', clientId: 'c3', status: 'Lead', value: 18500, notes: '', createdAt: '2026-05-20' },
+  { id: 'j4', title: 'Roof Replacement', clientId: 'c1', status: 'Completed', value: 31000, notes: 'Paid in full.', createdAt: '2026-02-15' },
 ];
 
 // ── Modal wrapper ─────────────────────────────────────────────────────────────
@@ -109,7 +108,7 @@ function JobForm({ initial, clients, onSave, onClose }: {
   initial?: Job; clients: Client[]; onSave: (j: Job) => void; onClose: () => void;
 }) {
   const [form, setForm] = useState<Job>(
-    initial ?? { id: uid(), title: '', clientId: clients[0]?.id ?? '', status: 'Lead', value: 0, address: '', notes: '', createdAt: new Date().toISOString().slice(0, 10) }
+    initial ?? { id: uid(), title: '', clientId: clients[0]?.id ?? '', status: 'Lead', value: 0, notes: '', createdAt: new Date().toISOString().slice(0, 10) }
   );
   const set = (k: keyof Job) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: k === 'value' ? Number(e.target.value) : e.target.value }));
@@ -143,10 +142,6 @@ function JobForm({ initial, clients, onSave, onClose }: {
           <label className="block text-sm font-medium mb-1">Date Added</label>
           <input className="w-full border rounded px-3 py-1.5 text-sm" type="date" value={form.createdAt} onChange={set('createdAt')} />
         </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Address</label>
-        <input className="w-full border rounded px-3 py-1.5 text-sm" value={form.address} onChange={set('address')} />
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Notes</label>
@@ -294,7 +289,7 @@ function JobsTab({ jobs, clients, onAdd, onEdit, onDelete }: {
       <table className="w-full text-sm border rounded-lg overflow-hidden bg-white">
         <thead className="bg-gray-50 text-left">
           <tr>
-            {['Title', 'Client', 'Address', 'Status', 'Value', 'Notes', ''].map(h => (
+            {['Title', 'Client', 'Status', 'Value', 'Notes', ''].map(h => (
               <th key={h} className="px-3 py-2 font-medium text-gray-600">{h}</th>
             ))}
           </tr>
@@ -304,7 +299,6 @@ function JobsTab({ jobs, clients, onAdd, onEdit, onDelete }: {
             <tr key={j.id} className="border-t hover:bg-gray-50">
               <td className="px-3 py-2 font-medium">{j.title}</td>
               <td className="px-3 py-2 text-gray-600">{clientMap[j.clientId]?.name ?? '—'}</td>
-              <td className="px-3 py-2 text-gray-500 text-xs">{j.address}</td>
               <td className="px-3 py-2">
                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[j.status]}`}>{j.status}</span>
               </td>
@@ -317,7 +311,7 @@ function JobsTab({ jobs, clients, onAdd, onEdit, onDelete }: {
             </tr>
           ))}
           {visible.length === 0 && (
-            <tr><td colSpan={7} className="px-3 py-6 text-center text-gray-400">No jobs found</td></tr>
+            <tr><td colSpan={6} className="px-3 py-6 text-center text-gray-400">No jobs found</td></tr>
           )}
         </tbody>
       </table>
