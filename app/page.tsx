@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -111,8 +111,22 @@ function JobForm({ initial, clients, onSave, onClose }: {
   const [form, setForm] = useState<Job>(
     initial ?? { id: uid(), title: '', clientId: clients[0]?.id ?? '', status: 'Lead', value: 0, address: '', notes: '', createdAt: new Date().toISOString().slice(0, 10) }
   );
+  const [spinning, setSpinning] = useState(false);
+  const spinTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const set = (k: keyof Job) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: k === 'value' ? Number(e.target.value) : e.target.value }));
+
+  const handleClientChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    set('clientId')(e);
+    if (spinTimer.current) clearTimeout(spinTimer.current);
+    setSpinning(false);
+    // Defer by one tick so removing+re-adding the class re-triggers the animation
+    requestAnimationFrame(() => {
+      setSpinning(true);
+      spinTimer.current = setTimeout(() => setSpinning(false), 400);
+    });
+  };
 
   return (
     <form onSubmit={e => { e.preventDefault(); onSave(form); }} className="space-y-3">
@@ -123,7 +137,11 @@ function JobForm({ initial, clients, onSave, onClose }: {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-medium mb-1">Client</label>
-          <select className="w-full border rounded px-3 py-1.5 text-sm" value={form.clientId} onChange={set('clientId')}>
+          <select
+            className={`w-full border rounded px-3 py-1.5 text-sm${spinning ? ' spin-once' : ''}`}
+            value={form.clientId}
+            onChange={handleClientChange}
+          >
             {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
